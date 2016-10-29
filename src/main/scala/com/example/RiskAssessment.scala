@@ -12,7 +12,7 @@ object RiskAssessmentDriver extends CompletableApp(2) {
   implicit val timeout = Timeout(5 seconds)
 }
 
-case class AttacheDocument(documentText: String)
+case class AttachDocument(documentText: String)
 case class ClassifyRisk()
 case class RiskClassified(classification: String)
 
@@ -41,16 +41,17 @@ class RiskAssessment extends Actor {
   var document = Document(None)
 
   def documented: Receive = {
-    case attachment: AttacheDocument =>
-      // already received; ignore
+    case attachment: AttachDocument =>
+    // already received; ignore
+
     case classify: ClassifyRisk =>
       sender ! RiskClassified(document.determineClassification)
   }
 
   def undocumented: Receive = {
-    case attachement: AttacheDocument =>
-      document = Document(Some(attachement.documentText))
-      context.become(document)
+    case attachment: AttachDocument =>
+      document = Document(Some(attachment.documentText))
+      context.become(documented)
     case classify: ClassifyRisk =>
       sender ! RiskClassified("Unknown")
   }
